@@ -1,7 +1,12 @@
 plugins {
     id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'kotlin-parcelize'
 }
+
+def DISTRIBUTION_VERSION_CODE = 1
+def DISTRIBUTION_VERSION_NAME = "1.0.0"
 
 android {
     compileSdk 32
@@ -10,32 +15,58 @@ android {
         applicationId "com.jamesclark.android.androidlibraryexample"
         minSdk 26
         targetSdk 32
-        versionCode 1
-        versionName "1.0"
+        versionCode DISTRIBUTION_VERSION_CODE
+        versionName DISTRIBUTION_VERSION_NAME
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
         }
     }
     compileOptions {
+        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    flavorDimensions 'tier'
+
+    productFlavors {
+        distribution {
+            dimension 'tier'
+            applicationId 'com.jamesclark.android.androidlibraryexample.distribution'
+        }
+    }
 }
 
 dependencies {
-
+    implementation project(':androidlibraryexample')
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.6.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2'
+    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.0'
+    implementation "android.arch.lifecycle:extensions:1.1.1"
+
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
