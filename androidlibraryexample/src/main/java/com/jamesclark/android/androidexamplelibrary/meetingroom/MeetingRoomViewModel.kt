@@ -35,7 +35,7 @@ class MeetingRoomViewModel(
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         response.body()?.let { body ->
-                            FileUtils.saveToCacheFile(Gson().toJson(body), cachePath)
+                            FileUtils.writeFile(Gson().toJson(body), cachePath)
                             availableTimesList.postValue(body.floors.flatMap { f -> f.rooms }
                                 .filter { r -> roomIDSet.contains(r.id) }
                                 .flatMap { r -> r.availability })
@@ -49,7 +49,7 @@ class MeetingRoomViewModel(
                 // otherwise load from local cache if app is offline
                 if (File(cachePath).exists()) {
                     val floors =
-                        Gson().fromJson(FileUtils.readJsonFile(cachePath), Floors::class.java)
+                        Gson().fromJson(FileUtils.readFile(cachePath), Floors::class.java)
                     withContext(Dispatchers.Main) {
                         availableTimesList.postValue(floors.floors.flatMap { f -> f.rooms }
                             .filter { r -> roomIDSet.contains(r.id) }
@@ -73,7 +73,7 @@ class MeetingRoomViewModel(
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         response.body()?.let { body ->
-                            FileUtils.saveToCacheFile(Gson().toJson(body), cachePath)
+                            FileUtils.writeFile(Gson().toJson(body), cachePath)
                             roomList.postValue(body.floors.filter { f -> f.id == floor.id }
                                 .flatMap { f -> f.rooms })
                             loading.value = false
@@ -86,7 +86,7 @@ class MeetingRoomViewModel(
                 // otherwise load from local cache if app is offline
                 if (File(cachePath).exists()) {
                     val floors =
-                        Gson().fromJson(FileUtils.readJsonFile(cachePath), Floors::class.java)
+                        Gson().fromJson(FileUtils.readFile(cachePath), Floors::class.java)
                     withContext(Dispatchers.Main) {
                         roomList.postValue(floors.floors.filter { f -> f.id == floor.id }
                             .flatMap { f -> f.rooms })
@@ -109,7 +109,7 @@ class MeetingRoomViewModel(
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         response.body()?.let { body ->
-                            FileUtils.saveToCacheFile(Gson().toJson(body), cachePath)
+                            FileUtils.writeFile(Gson().toJson(body), cachePath)
                             roomList.postValue(body.floors.flatMap { f -> f.rooms })
                             loading.value = false
                         }
@@ -121,7 +121,7 @@ class MeetingRoomViewModel(
                 // otherwise load from local cache if app is offline
                 if (File(cachePath).exists()) {
                     val floors =
-                        Gson().fromJson(FileUtils.readJsonFile(cachePath), Floors::class.java)
+                        Gson().fromJson(FileUtils.readFile(cachePath), Floors::class.java)
                     withContext(Dispatchers.Main) {
                         roomList.postValue(floors.floors.flatMap { f -> f.rooms })
                         loading.value = false
@@ -143,7 +143,7 @@ class MeetingRoomViewModel(
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         response.body()?.let { body ->
-                            FileUtils.saveToCacheFile(Gson().toJson(body), cachePath)
+                            FileUtils.writeFile(Gson().toJson(body), cachePath)
                             floorList.postValue(body.floors)
                             loading.value = false
                         }
@@ -155,7 +155,7 @@ class MeetingRoomViewModel(
                 // otherwise load from local cache if app is offline
                 if (File(cachePath).exists()) {
                     val floors =
-                        Gson().fromJson(FileUtils.readJsonFile(cachePath), Floors::class.java)
+                        Gson().fromJson(FileUtils.readFile(cachePath), Floors::class.java)
                     withContext(Dispatchers.Main) {
                         floorList.postValue(floors.floors)
                         loading.value = false

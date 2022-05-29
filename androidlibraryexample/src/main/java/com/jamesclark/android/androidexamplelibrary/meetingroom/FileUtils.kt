@@ -5,54 +5,44 @@ import java.io.*
 
 class FileUtils {
     companion object {
-        fun saveToCacheFile(data: String, fileName: String): String? {
-            try {
-                val cacheFile = File(fileName)
-                if (!cacheFile.exists()) {
+        fun readFile(absolutePath: String): String {
+            FileInputStream(absolutePath).use { inputStream ->
+                ByteArrayOutputStream().use { outputStream ->
+                    val buf = ByteArray(1024)
+                    var len: Int
                     try {
-                        if (!cacheFile.createNewFile()) {
-                            Log.e(FileUtils::class.java.simpleName, "Error creating cache file")
-                            return null
+                        while (inputStream.read(buf).also { len = it } != -1) {
+                            outputStream.write(buf, 0, len)
                         }
                     } catch (ex: IOException) {
-                        Log.e(FileUtils::class.java.simpleName, "Error creating cache file", ex)
-                        return null
+                        Log.e(FileUtils::class.java.simpleName, "Error reading file", ex)
                     }
-                } else {
-                    PrintWriter(cacheFile).close()
+                    return outputStream.toString()
                 }
-
-                BufferedWriter(FileWriter(cacheFile, true)).use {
-                    it.append(data)
-                }
-
-                return cacheFile.absolutePath
-            } catch (ex: Exception) {
-                Log.e(FileUtils::class.java.simpleName, "Error saving data", ex)
             }
-
-            return null
         }
 
-        fun readJsonFile(path: String): String {
-            val inputStream = FileInputStream(path)
-            val outputStream = ByteArrayOutputStream()
-            val buf = ByteArray(1024)
-            var len: Int
+        fun writeFile(data: String, absolutePath: String) {
             try {
-                while (inputStream.read(buf).also { len = it } != -1) {
-                    outputStream.write(buf, 0, len)
+                val file = File(absolutePath)
+                if (!file.exists()) {
+                    try {
+                        if (!file.createNewFile()) {
+                            Log.e(FileUtils::class.java.simpleName, "Error creating file")
+                        }
+                    } catch (ex: IOException) {
+                        Log.e(FileUtils::class.java.simpleName, "Error creating file", ex)
+                    }
+                } else {
+                    PrintWriter(file).close()
                 }
-                outputStream.close()
-                inputStream.close()
-            } catch (e: IOException) {
-                Log.e(
-                    FileUtils::class.java.simpleName,
-                    "Error reading cache file",
-                    e
-                )
+
+                BufferedWriter(FileWriter(file, true)).use { bufferedWriter ->
+                    bufferedWriter.append(data)
+                }
+            } catch (ex: Exception) {
+                Log.e(FileUtils::class.java.simpleName, "Error writing file", ex)
             }
-            return outputStream.toString()
         }
     }
 }
