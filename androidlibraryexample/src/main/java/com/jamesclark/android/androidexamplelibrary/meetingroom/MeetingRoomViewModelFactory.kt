@@ -1,7 +1,7 @@
 package com.jamesclark.android.androidexamplelibrary.meetingroom
 
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 
 class MeetingRoomViewModelFactory(private val repository: MeetingRoomRepository) :
     ViewModelProvider.Factory {
