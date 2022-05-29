@@ -1,6 +1,9 @@
 package com.jamesclark.android.androidexamplelibrary.meetingroom
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
 import com.jamesclark.android.androidexamplelibrary.meetingroom.data.Floors
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -21,7 +24,15 @@ interface MeetingRoomAPI {
     companion object {
         private var instance: MeetingRoomAPI? = null
 
-        @JvmStatic
+        fun isInternetConnected(context: Context): Boolean {
+            val connMgr =
+                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
+            connMgr ?: return false
+            val network: Network = connMgr.activeNetwork ?: return false
+            val capabilities = connMgr.getNetworkCapabilities(network)
+            return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        }
+
         fun getInstance(context: Context): MeetingRoomAPI {
             val currentInstance = instance
             return if (currentInstance == null) {
@@ -37,7 +48,6 @@ interface MeetingRoomAPI {
             }
         }
 
-        @JvmStatic
         fun getApiBaseUri(context: Context): String {
             return getProperty(
                 "api.properties",

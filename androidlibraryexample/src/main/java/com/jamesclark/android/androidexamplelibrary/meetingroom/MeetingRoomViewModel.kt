@@ -1,11 +1,19 @@
 package com.jamesclark.android.androidexamplelibrary.meetingroom
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import com.google.gson.Gson
 import com.jamesclark.android.androidexamplelibrary.meetingroom.data.Floor
+import com.jamesclark.android.androidexamplelibrary.meetingroom.data.Floors
 import kotlinx.coroutines.*
+import java.io.File
 
-class MeetingRoomViewModel(private val repository: MeetingRoomRepository) : ViewModel() {
+class MeetingRoomViewModel(
+    application: Application,
+    private val repository: MeetingRoomRepository
+) : AndroidViewModel(application) {
+    val cachePath = getApplication<Application>().cacheDir.canonicalPath + "/" + "floors.json"
     val errorMessage = MutableLiveData<String>()
     val floorList = MutableLiveData<List<Floor>>()
     val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
@@ -16,15 +24,33 @@ class MeetingRoomViewModel(private val repository: MeetingRoomRepository) : View
 
     fun getAllFloors() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val response = repository.getAllFloors()
-            withContext(Dispatchers.Main) {
-                if (response.isSuccessful) {
-                    response.body()?.let { body ->
-                        floorList.postValue(body.floors)
+            if (MeetingRoomAPI.isInternetConnected(getApplication())) {
+                // load from API if internet is connected
+                val response = repository.getAllFloors()
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        response.body()?.let { body ->
+                            FileUtils.saveToCacheFile(Gson().toJson(body), cachePath)
+                            floorList.postValue(body.floors)
+                            loading.value = false
+                        }
+                    } else {
+                        onError("Error : ${response.message()} ")
+                    }
+                }
+            } else {
+                // otherwise load from local cache if app is offline
+                if (File(cachePath).exists()) {
+                    val floors =
+                        Gson().fromJson(FileUtils.readJsonFile(cachePath), Floors::class.java)
+                    withContext(Dispatchers.Main) {
+                        floorList.postValue(floors.floors)
                         loading.value = false
                     }
                 } else {
-                    onError("Error : ${response.message()} ")
+                    // no cached data to load
+                    floorList.postValue(emptyList())
+                    loading.value = false
                 }
             }
         }

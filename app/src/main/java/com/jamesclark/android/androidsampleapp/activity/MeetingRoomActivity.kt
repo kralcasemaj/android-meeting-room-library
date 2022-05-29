@@ -30,7 +30,10 @@ class MeetingRoomActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(
             this,
-            MeetingRoomViewModelFactory(MeetingRoomRepository(MeetingRoomAPI.getInstance(this)))
+            MeetingRoomViewModelFactory(
+                application,
+                MeetingRoomRepository(MeetingRoomAPI.getInstance(this))
+            )
         )[MeetingRoomViewModel::class.java]
 
         showFloorList()
