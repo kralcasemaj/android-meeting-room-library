@@ -6,10 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.jamesclark.android.androidexamplelibrary.meetingroom.data.Availability
 import com.jamesclark.android.androidexamplelibrary.meetingroom.data.Floor
-import com.jamesclark.android.androidexamplelibrary.meetingroom.data.Floors
 import com.jamesclark.android.androidexamplelibrary.meetingroom.data.Room
 import kotlinx.coroutines.*
-import java.io.File
 
 class MeetingRoomViewModel(
     application: Application,
@@ -27,11 +25,11 @@ class MeetingRoomViewModel(
     var job: Job? = null
 
     fun getAvailableTimes(rooms: List<Room>) {
-        val roomIDSet = rooms.map { r -> r.id }.toSet()
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val roomIDSet = rooms.map { r -> r.id }.toSet()
             if (MeetingRoomAPI.isInternetConnected(getApplication())) {
                 // load from API if internet is connected
-                val response = repository.getAllFloors()
+                val response = repository.getAllFloorsFromAPI()
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         response.body()?.let { body ->
@@ -47,18 +45,11 @@ class MeetingRoomViewModel(
                 }
             } else {
                 // otherwise load from local cache if app is offline
-                if (File(cachePath).exists()) {
-                    val floors =
-                        Gson().fromJson(FileUtils.readFile(cachePath), Floors::class.java)
-                    withContext(Dispatchers.Main) {
-                        availableTimesList.postValue(floors.floors.flatMap { f -> f.rooms }
-                            .filter { r -> roomIDSet.contains(r.id) }
-                            .flatMap { r -> r.availability })
-                        loading.value = false
-                    }
-                } else {
-                    // no cached data to load
-                    roomList.postValue(emptyList())
+                val floors = repository.getAllFloorsFromLocalCache()
+                withContext(Dispatchers.Main) {
+                    availableTimesList.postValue(floors.flatMap { f -> f.rooms }
+                        .filter { r -> roomIDSet.contains(r.id) }
+                        .flatMap { r -> r.availability })
                     loading.value = false
                 }
             }
@@ -69,7 +60,7 @@ class MeetingRoomViewModel(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             if (MeetingRoomAPI.isInternetConnected(getApplication())) {
                 // load from API if internet is connected
-                val response = repository.getAllFloors()
+                val response = repository.getAllFloorsFromAPI()
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         response.body()?.let { body ->
@@ -84,17 +75,10 @@ class MeetingRoomViewModel(
                 }
             } else {
                 // otherwise load from local cache if app is offline
-                if (File(cachePath).exists()) {
-                    val floors =
-                        Gson().fromJson(FileUtils.readFile(cachePath), Floors::class.java)
-                    withContext(Dispatchers.Main) {
-                        roomList.postValue(floors.floors.filter { f -> f.id == floor.id }
-                            .flatMap { f -> f.rooms })
-                        loading.value = false
-                    }
-                } else {
-                    // no cached data to load
-                    roomList.postValue(emptyList())
+                val floors = repository.getAllFloorsFromLocalCache()
+                withContext(Dispatchers.Main) {
+                    roomList.postValue(floors.filter { f -> f.id == floor.id }
+                        .flatMap { f -> f.rooms })
                     loading.value = false
                 }
             }
@@ -105,7 +89,7 @@ class MeetingRoomViewModel(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             if (MeetingRoomAPI.isInternetConnected(getApplication())) {
                 // load from API if internet is connected
-                val response = repository.getAllFloors()
+                val response = repository.getAllFloorsFromAPI()
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         response.body()?.let { body ->
@@ -119,16 +103,9 @@ class MeetingRoomViewModel(
                 }
             } else {
                 // otherwise load from local cache if app is offline
-                if (File(cachePath).exists()) {
-                    val floors =
-                        Gson().fromJson(FileUtils.readFile(cachePath), Floors::class.java)
-                    withContext(Dispatchers.Main) {
-                        roomList.postValue(floors.floors.flatMap { f -> f.rooms })
-                        loading.value = false
-                    }
-                } else {
-                    // no cached data to load
-                    roomList.postValue(emptyList())
+                val floors = repository.getAllFloorsFromLocalCache()
+                withContext(Dispatchers.Main) {
+                    roomList.postValue(floors.flatMap { f -> f.rooms })
                     loading.value = false
                 }
             }
@@ -139,7 +116,7 @@ class MeetingRoomViewModel(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             if (MeetingRoomAPI.isInternetConnected(getApplication())) {
                 // load from API if internet is connected
-                val response = repository.getAllFloors()
+                val response = repository.getAllFloorsFromAPI()
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         response.body()?.let { body ->
@@ -153,16 +130,9 @@ class MeetingRoomViewModel(
                 }
             } else {
                 // otherwise load from local cache if app is offline
-                if (File(cachePath).exists()) {
-                    val floors =
-                        Gson().fromJson(FileUtils.readFile(cachePath), Floors::class.java)
-                    withContext(Dispatchers.Main) {
-                        floorList.postValue(floors.floors)
-                        loading.value = false
-                    }
-                } else {
-                    // no cached data to load
-                    floorList.postValue(emptyList())
+                val floors = repository.getAllFloorsFromLocalCache()
+                withContext(Dispatchers.Main) {
+                    floorList.postValue(floors)
                     loading.value = false
                 }
             }

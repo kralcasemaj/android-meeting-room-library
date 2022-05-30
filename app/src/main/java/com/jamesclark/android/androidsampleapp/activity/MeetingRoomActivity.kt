@@ -3,7 +3,6 @@ package com.jamesclark.android.androidsampleapp.activity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.jamesclark.android.androidexamplelibrary.meetingroom.MeetingRoomAPI
 import com.jamesclark.android.androidexamplelibrary.meetingroom.MeetingRoomRepository
 import com.jamesclark.android.androidexamplelibrary.meetingroom.MeetingRoomViewModel
 import com.jamesclark.android.androidexamplelibrary.meetingroom.MeetingRoomViewModelFactory
@@ -32,7 +31,7 @@ class MeetingRoomActivity : AppCompatActivity() {
             this,
             MeetingRoomViewModelFactory(
                 application,
-                MeetingRoomRepository(MeetingRoomAPI.getInstance(this))
+                MeetingRoomRepository(application.applicationContext)
             )
         )[MeetingRoomViewModel::class.java]
 
