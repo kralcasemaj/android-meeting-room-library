@@ -24,6 +24,10 @@ class MeetingRoomViewModel(
     val loading = MutableLiveData<Boolean>()
     var job: Job? = null
 
+    /**
+     * Get a list of available times for
+     * the specified rooms
+     */
     fun getAvailableTimes(rooms: List<Room>) {
         job = viewModelScope.launch {
             val roomIDSet = rooms.map { r -> r.id }.toSet()
@@ -58,6 +62,10 @@ class MeetingRoomViewModel(
         }
     }
 
+    /**
+     * Get a list of floors for
+     * the specified floor
+     */
     fun getRooms(floor: Floor) {
         job = viewModelScope.launch {
             if (isInternetConnected) {
@@ -89,6 +97,9 @@ class MeetingRoomViewModel(
         }
     }
 
+    /**
+     * Get a list of all rooms
+     */
     fun getAllRooms() {
         job = viewModelScope.launch {
             if (isInternetConnected) {
@@ -118,6 +129,9 @@ class MeetingRoomViewModel(
         }
     }
 
+    /**
+     * Get a list of all floors
+     */
     fun getAllFloors() {
         job = viewModelScope.launch {
             if (isInternetConnected) {
