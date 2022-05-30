@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.jamesclark.android.androidexamplelibrary.meetingroom.data.Room
 import com.jamesclark.android.androidlibraryexample.app.databinding.AvailabilityListFragmentBinding
+import com.jamesclark.android.androidsampleapp.viewadapter.AvailabilityRecyclerViewAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

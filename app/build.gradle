@@ -91,5 +91,6 @@ dependencies {
     androidTestImplementation  'com.google.dagger:hilt-android-testing:2.42'
     androidTestAnnotationProcessor 'com.google.dagger:hilt-compiler:2.42'
     testImplementation 'com.google.dagger:hilt-android-testing:2.42'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.2'
     testAnnotationProcessor 'com.google.dagger:hilt-compiler:2.42'
 }

@@ -33,11 +33,11 @@ interface MeetingRoomAPI {
             return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
         }
 
-        fun getInstance(context: Context): MeetingRoomAPI {
+        fun getInstance(baseUrl: String): MeetingRoomAPI {
             val currentInstance = instance
             return if (currentInstance == null) {
                 val retrofit = Retrofit.Builder()
-                    .baseUrl(getApiBaseUri(context))
+                    .baseUrl(baseUrl)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build()
                 val newInstance = retrofit.create(MeetingRoomAPI::class.java)

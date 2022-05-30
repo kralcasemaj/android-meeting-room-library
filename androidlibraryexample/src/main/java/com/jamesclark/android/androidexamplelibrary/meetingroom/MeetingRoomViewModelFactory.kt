@@ -12,7 +12,11 @@ class MeetingRoomViewModelFactory(
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return if (modelClass.isAssignableFrom(MeetingRoomViewModel::class.java)) {
-            MeetingRoomViewModel(application, repository) as T
+            MeetingRoomViewModel(
+                repository,
+                MeetingRoomAPI.isInternetConnected(application.applicationContext),
+                application.cacheDir.absolutePath + "/" + "floors_mock_response.json"
+            ) as T
         } else {
             throw IllegalArgumentException("ViewModel Not Found")
         }

@@ -1,4 +1,4 @@
-package com.jamesclark.android.androidsampleapp.fragment
+package com.jamesclark.android.androidsampleapp.viewadapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
